@@ -1,0 +1,4 @@
+<discovery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/disco/"> 
+  <contractRef ref="https://localhost.gtaero.net/oms/xml/oms.wsdl" docRef="https://localhost.gtaero.net/oms/service.php" xmlns="http://schemas.xmlsoap.org/disco/scl/" /> 
+  <soap address="https://localhost.gtaero.net/oms/service.php" xmlns:q1="http://schemas.microsoft.com/office/Outlook/2006/OMS" binding="q1:Koneko_GV_Soap" xmlns="http://schemas.xmlsoap.org/disco/soap/" /> 
+</discovery>

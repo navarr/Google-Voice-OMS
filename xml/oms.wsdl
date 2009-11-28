@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+<wsdl:definitions
+	xmlns:soap		= "http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tm		= "http://microsoft.com/wsdl/mime/textMatching/"
+	xmlns:soapenc	= "http://schemas.xmlsoap.org/soap/encoding/"
+	xmlns:mime		= "http://schemas.xmlsoap.org/wsdl/mime/"
+	xmlns:tns		= "http://schemas.microsoft.com/office/Outlook/2006/OMS"
+	xmlns:s		= "http://www.w3.org/2001/XMLSchema"
+	xmlns:soap12	= "http://schemas.xmlsoap.org/wsdl/soap12/"
+	xmlns:http		= "http://schemas.xmlsoap.org/wsdl/http/"
+	targetNamespace	= "http://schemas.microsoft.com/office/Outlook/2006/OMS"
+	xmlns:wsdl		= "http://schemas.xmlsoap.org/wsdl/"
+>
+	<wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Koneko-chan Google Voice Microsoft Outlook Mobile Service</wsdl:documentation>
+	<wsdl:types>
+		<s:schema elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/office/Outlook/2006/OMS">
+			<s:element name="GetServiceInfo">
+				<s:complexType />
+			</s:element>
+			<s:element name="GetServiceInfoResponse">
+				<s:complexType>
+					<s:sequence>
+						<s:element minOccurs="0" maxOccurs="1" name="GetServiceInfoResult" type="s:string" />
+					</s:sequence>
+				</s:complexType>
+			</s:element>
+			<s:element name="GetUserInfo">
+				<s:complexType>
+					<s:sequence>
+						<s:element minOccurs="0" maxOccurs="1" name="xmsUser" type="s:string" />
+					</s:sequence>
+				</s:complexType>
+			</s:element>
+			<s:element name="GetUserInfoResponse"> 
+					<s:complexType> 
+							<s:sequence> 
+									<s:element minOccurs="0" maxOccurs="1" name="GetUserInfoResult" type="s:string" /> 
+							</s:sequence> 
+					</s:complexType> 
+			</s:element>
+			<s:element name="DeliverXms">
+				<s:complexType>
+					<s:sequence>
+						<s:element minOccurs="0" maxOccurs="1" name="xmsData" type="s:string" />
+					</s:sequence>
+				</s:complexType>
+			</s:element>
+			<s:element name="DeliverXmsResponse"> 
+				<s:complexType> 
+					<s:sequence> 
+						<s:element minOccurs="0" maxOccurs="1" name="DeliverXmsResult" type="s:string" /> 
+					</s:sequence> 
+				</s:complexType> 
+			</s:element>
+			<s:element name="SendXms">
+				<s:complexType>
+					<s:sequence>
+						<s:element minOccurs="0" maxOccurs="1" name="xmsData" type="s:string" />
+					</s:sequence>
+				</s:complexType>
+			</s:element>
+			<s:element name="SendXmsResponse"> 
+				<s:complexType> 
+					<s:sequence> 
+						<s:element minOccurs="0" maxOccurs="1" name="SendXmsResult" type="s:string" /> 
+					</s:sequence> 
+				</s:complexType> 
+			</s:element>
+		</s:schema>
+	</wsdl:types>
+	<wsdl:message name="GetServiceInfoSoapIn">
+		<wsdl:part name="parameters" element="tns:GetServiceInfo" />
+	</wsdl:message>
+	<wsdl:message name="GetServiceInfoSoapOut">
+		<wsdl:part name="parameters" element="tns:GetServiceInfoResponse" />
+	</wsdl:message>
+	<wsdl:message name="GetUserInfoSoapIn">
+		<wsdl:part name="parameters" element="tns:GetUserInfo" />
+	</wsdl:message>
+	<wsdl:message name="GetUserInfoSoapOut">
+		<wsdl:part name="parameters" element="tns:GetUserInfoResponse" />
+	</wsdl:message>
+	<wsdl:message name="DeliverXmsSoapIn">
+		<wsdl:part name="parameters" element="tns:DeliverXms" />
+	</wsdl:message>
+	<wsdl:message name="DeliverXmsSoapOut">
+		<wsdl:part name="parameters" element="tns:DeliverXmsResponse" />
+	</wsdl:message>
+	<wsdl:message name="SendXmsSoapIn">
+		<wsdl:part name="parameters" element="tns:SendXms" />
+	</wsdl:message>
+	<wsdl:message name="SendXmsSoapOut">
+		<wsdl:part name="parameters" element="tns:SendXmsResponse" />
+	</wsdl:message>
+	<wsdl:portType name="Koneko_GV_Soap">
+		<wsdl:operation name="GetServiceInfo">
+			<wsdl:input message="tns:GetServiceInfoSoapIn" />
+			<wsdl:output message="tns:GetServiceInfoSoapOut" />
+		</wsdl:operation>
+		<wsdl:operation name="GetUserInfo">
+			<wsdl:input message="tns:GetUserInfoSoapIn" />
+			<wsdl:output message="tns:GetUserInfoSoapOut" />
+		</wsdl:operation>
+		<wsdl:operation name="DeliverXms">
+			<wsdl:input message="tns:DeliverXmsSoapIn" />
+			<wsdl:output message="tns:DeliverXmsSoapOut" />
+		</wsdl:operation>
+		<wsdl:operation name="SendXms">
+			<wsdl:input message="tns:SendXmsSoapIn" />
+			<wsdl:output message="tns:SendXmsSoapOut" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="Koneko_GV_Soap" type="tns:Koneko_GV_Soap">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http" /> 
+		<wsdl:operation name="GetServiceInfo"> 
+			<soap:operation soapAction="http://schemas.microsoft.com/office/Outlook/2006/OMS/GetServiceInfo" style="document" /> 
+			<wsdl:input> 
+				<soap:body use="literal" /> 
+			</wsdl:input> 
+			<wsdl:output> 
+				<soap:body use="literal" /> 
+			</wsdl:output> 
+		</wsdl:operation> 
+		<wsdl:operation name="GetUserInfo"> 
+			<soap:operation soapAction="http://schemas.microsoft.com/office/Outlook/2006/OMS/GetUserInfo" style="document" /> 
+			<wsdl:input> 
+				<soap:body use="literal" /> 
+			</wsdl:input> 
+			<wsdl:output> 
+				<soap:body use="literal" /> 
+			</wsdl:output> 
+		</wsdl:operation> 
+		<wsdl:operation name="DeliverXms"> 
+			<soap:operation soapAction="http://schemas.microsoft.com/office/Outlook/2006/OMS/DeliverXms" style="document" /> 
+			<wsdl:input> 
+				<soap:body use="literal" /> 
+			</wsdl:input> 
+			<wsdl:output> 
+				<soap:body use="literal" /> 
+			</wsdl:output> 
+		</wsdl:operation>
+		<wsdl:operation name="SendXms"> 
+			<soap:operation soapAction="http://schemas.microsoft.com/office/Outlook/2006/OMS/DeliverXms" style="document" /> 
+			<wsdl:input> 
+				<soap:body use="literal" /> 
+			</wsdl:input> 
+			<wsdl:output> 
+				<soap:body use="literal" /> 
+			</wsdl:output> 
+		</wsdl:operation> 
+	</wsdl:binding>
+	<wsdl:service name="Koneko_GV">
+		<wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Koneko-chan Google Voice Microsoft Outlook Mobile Service</wsdl:documentation>
+		<wsdl:port name="Koneko_GV_Soap" binding="tns:Koneko_GV_Soap">
+			<soap:address location="https://localhost.gtaero.net/oms/service.php" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
