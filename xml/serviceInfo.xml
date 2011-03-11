@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-16"?>
 <serviceInfo xmlns="http://schemas.microsoft.com/office/Outlook/2006/OMS/serviceInfo">
-	<serviceProvider>Koneko-chan</serviceProvider>
-	<serviceUri>https://localhost.gtaero.net/oms/service.php</serviceUri>
-	<signUpPage>http://localhost.gtaero.net/</signUpPage>
+	<serviceProvider><?php echo Settings::SERVICE_NAME; ?></serviceProvider>
+	<serviceUri><?php echo Settings::SERVICE_BASE; ?>/service.php</serviceUri>
+	<signUpPage><?php echo Settings::SERVICE_SIGNUP; ?></signUpPage>
 	<targetLocale>2052</targetLocale>
-   <localName>Google Voice</localName>
-   <englishName>Google Voice</englishName>
+   <localName><?php echo Settings::SERVICE_SHORTNAME; ?></localName>
+   <englishName><?php echo Settings::SERVICE_SHORTNAME; ?></englishName>
    <authenticationType>Other</authenticationType>
    <supportedService>
       <SMS_SENDER maxRecipientsPerMessage="50" maxMessagesPerSend="20"

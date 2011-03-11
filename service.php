@@ -7,11 +7,19 @@
 	$server->addFunction("DeliverXms");
 	$server->addFunction("SendXms");
 	$server->handle();
+	function load_xml($file)
+	{
+		ob_start();
+		include($file);
+		$return = ob_get_contents();
+		ob_end_clean();
+		return $return;
+	}
 	function GetServiceInfo()
 	{
 		global $soap;
 		$soap = TRUE;
-		return array("GetServiceInfoResult" => file_get_contents("xml/serviceInfo.xml"));
+		return array("GetServiceInfoResult" => load_xml("xml/serviceInfo.xml"));
 	}
 	function GetUserInfo($complex)
 	{
