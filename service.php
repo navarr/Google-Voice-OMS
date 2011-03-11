@@ -1,6 +1,7 @@
 <?php
 	ini_set("soap.wsdl_cache_enabled","0");
 	require_once("lib/googleVoice.php");
+	require_once("settings.php");
 	$server = new SoapServer("xml/oms.wsdl");
 	$server->addFunction("GetServiceInfo");
 	$server->addFunction("GetUserInfo");
@@ -71,8 +72,8 @@
 		try
 		{
 			$xml = new SimpleXMLElement($xmsData);
-			$user = $xml->user->userId;
-			$pass = $xml->user->password;
+			$user = ((string)$xml->user->userId);
+			$pass = ((string)$xml->user->password);
 
 			try
 			{
