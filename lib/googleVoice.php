@@ -20,10 +20,10 @@ class GoogleVoice
         // Login to Google Voice
         private function login()
         {
-                $html = $this->curl("http://www.google.com/voice/m");
+		$html = $this->curl("http://www.google.com/voice/m");
 
                 $dom = new DOMDocument();
-                $dom->loadHTML($html);
+                @$dom->loadHTML($html);
                 $form = $dom->getElementById("gaia_loginform");
                 $inputList = $form->getElementsByTagName("input");
                 $inputAmt  = $inputList->length;
