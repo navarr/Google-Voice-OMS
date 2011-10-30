@@ -34,7 +34,7 @@
 			$xml = new SimpleXMLElement($xmsUser);
 			$user = $xml->userId;
 			$pass = $xml->password;
-	
+
 			try
 			{
 				$gv = new GoogleVoice($user,$pass);
