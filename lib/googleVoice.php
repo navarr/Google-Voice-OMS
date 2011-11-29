@@ -40,7 +40,10 @@ class GoogleVoice
                 $inputs["Email"] = $this->username;
                 $inputs["Passwd"] = $this->password;
                 $post = http_build_query($inputs);
-
+                // Quick & dirty patch to fix improper post request: 
+                // &Email%5B0%5D=nate%40nateandmor.com&Passwd%5B0%5D=... becomes
+		// &Email=nate%40nateandmor.com&Passwd=...
+		$post = preg_replace('/%5B0%5D/', '', $post);
                 $html = $this->curl($action, $this->lastURL, $post);
 
                 $this->crumb = urlencode($this->match('!<input.*?name="_rnr_se".*?value="(.*?)"!ms', $html, 1));
