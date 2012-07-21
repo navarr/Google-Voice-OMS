@@ -1,146 +1,100 @@
 <?php
+/*
+Version     0.2
+License     This code is released under the MIT Open Source License. Feel free to do whatever you want with it.
+Author      lostleon@gmail.com, http://www.lostleon.com/ | Modified by me@navarr.me, https://www.gvoms.com/
+LastUpdate  05/28/2010
+*/
 class GoogleVoice
 {
-        public $username;
-        public $password;
+    public $username;
+    public $password;
+    public $status;
+    private $lastURL;
+    private $login_auth;
+    private $inboxURL = 'https://www.google.com/voice/m/';
+    private $loginURL = 'https://www.google.com/accounts/ClientLogin';
+    private $smsURL = 'https://www.google.com/voice/m/sendsms';
+	
 
-        private $lastURL;
-        private $crumb;
+    public function __construct($username, $password)
+    {
+        $this->username = $username;
+        $this->password = $password;
+    }
+	
+    public function getNumber()
+    {	
+        $this->getLoginAuth();
+        $ch = curl_init($this->inboxURL);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $headers = array("Authorization: GoogleLogin auth=".$this->login_auth, 'User-Agent: Mozilla/5.0 (iPhone; U; CPU iPhone OS 2_2_1 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5H11 Safari/525.20');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $html = curl_exec($ch);
+        $this->lastURL = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        curl_close($ch);
+        $num = $this->match('#\<b class=\"ms3\"\>([^<]+)\</b\>#i', $html, 1);
+        return "1".str_replace(array(" ","(",")","-"),"",$num);
+    }
 
-        public $useragent = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.6 (KHTML, like Gecko) Chrome/7.0.503.0 Safari/534.6";
+    public function getLoginAuth()
+    {
+        $login_param = "accountType=GOOGLE&Email={$this->username}&Passwd={$this->password}&service=grandcentral&source=com.lostleon.GoogleVoiceTool";
+        $ch = curl_init($this->loginURL);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (iPhone; U; CPU iPhone OS 2_2_1 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5H11 Safari/525.20");
+        curl_setopt($ch, CURLOPT_REFERER, $this->lastURL);
+        curl_setopt($ch, CURLOPT_POST, "application/x-www-form-urlencoded");
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $login_param);
+        $html = curl_exec($ch);
+        $this->lastURL = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        curl_close($ch);
+        $this->login_auth = $this->match('/Auth=([A-z0-9_-]+)/', $html, 1);
+        return $this->login_auth;
+    }
 
-        public $debug = FALSE;
+    public function get_rnr_se()
+    {
+        $this->getLoginAuth();
+        $ch = curl_init($this->inboxURL);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $headers = array("Authorization: GoogleLogin auth=".$this->login_auth, 'User-Agent: Mozilla/5.0 (iPhone; U; CPU iPhone OS 2_2_1 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5H11 Safari/525.20');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $html = curl_exec($ch);
+        $this->lastURL = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        curl_close($ch);
+        $_rnr_se = $this->match('!<input.*?name="_rnr_se".*?value="(.*?)"!ms', $html, 1);
+        return $_rnr_se;
+    }
 
-        public function __construct($username,$password)
-        {
-        	$this->username = $username;
-                $this->password = $password;
-                $this->login();
-        }
-        // Login to Google Voice
-        private function login()
-        {
-		$html = $this->curl("http://www.google.com/voice/m");
+    public function sms($to_phonenumber, $smstxt)
+    {
+        $_rnr_se = $this->get_rnr_se();
+        $sms_param = "id=&c=&number=".urlencode($to_phonenumber)."&smstext=".urlencode($smstxt)."&_rnr_se=".urlencode($_rnr_se);
+        $ch = curl_init($this->smsURL);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $headers = array("Authorization: GoogleLogin auth=".$this->login_auth, 'User-Agent: Mozilla/5.0 (iPhone; U; CPU iPhone OS 2_2_1 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5H11 Safari/525.20');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_REFERER, $this->lastURL);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $sms_param);      
+        $this->status = curl_exec($ch);
+        $this->lastURL = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        curl_close($ch);
+        return $this->status;
+    }
 
-                $dom = new DOMDocument();
-                @$dom->loadHTML($html);
-                $form = $dom->getElementById("gaia_loginform");
-                $inputList = $form->getElementsByTagName("input");
-                $inputAmt  = $inputList->length;
-                $inputs = array();
-
-
-                for($i = 0; $i < $inputAmt;$i++)
-                {
-                        $inputs[$inputList->item($i)->getAttribute('name')] = $inputList->item($i)->getAttribute('value');
-                }
-                $action = $form->getAttribute('action');
-                print($action);
-                print_r($inputs);
-                $inputs["Email"] = $this->username;
-                $inputs["Passwd"] = $this->password;
-                $post = http_build_query($inputs);
-                // Quick & dirty patch to fix improper post request: 
-                // &Email%5B0%5D=nate%40nateandmor.com&Passwd%5B0%5D=... becomes
-		// &Email=nate%40nateandmor.com&Passwd=...
-		$post = preg_replace('/%5B0%5D/', '', $post);
-                $html = $this->curl($action, $this->lastURL, $post);
-
-                $this->crumb = urlencode($this->match('!<input.*?name="_rnr_se".*?value="(.*?)"!ms', $html, 1));
-                if(!$this->crumb) { throw new Exception("Couldn't get the Crumb!"); }
-        }
-        // Connect $you to $them. Takes two 10 digit US phone numbers.
-        public function call($you, $them)
-        {
-                $you = preg_replace('/[^0-9]/', '', $you);
-                $them = preg_replace('/[^0-9]/', '', $them);
-
-                $crumb = $this->crumb;
-
-                $post = "_rnr_se=$crumb&number=$them&call=Call";
-                $html = $this->curl("https://www.google.com/voice/m/callsms", $this->lastURL, $post);
-
-                preg_match_all('!<input.*?type="hidden".*?name="(.*?)".*?value="(.*?)"!ms', $html, $hidden);
-                $post = '';
-                for ($i = 0; $i < count($hidden[0]); $i++)
-                $post .= '&'.$hidden[1][$i].'='.urlencode($hidden[2][$i]);
-                $post .= "&phone=+1$you&Call=";
-
-                $html = $this->curl("https://www.google.com/voice/m/sendcall", $this->lastURL, $post);
-        }
-        public function sms($them, $smtxt)
-        {
-                $them = preg_replace('/[^0-9]/', '', $them);
-
-                $crumb = $this->crumb;
-
-                $post = "_rnr_se=$crumb&number=$them&smstext=$smtxt&submit=Send";
-                $html = $this->curl("https://www.google.com/voice/m/sendsms", $this->lastURL, $post);
-
-                preg_match_all('!<input.*?type="hidden".*?name="(.*?)".*?value="(.*?)"!ms', $html, $hidden);
-                $post = '';
-                for ($i = 0; $i < count($hidden[0]); $i++)
-                $post .= '&'.$hidden[1][$i].'='.urlencode($hidden[2][$i]);
-                $post .= "&submit=";
-
-                $html = $this->curl("https://www.google.com/voice/m/sendcall", $this->lastURL, $post);
-        }
-        public function get_number()
-	{
-		$raw = $this->curl("https://www.google.com/voice/m");
-		preg_match("#\<b class=\"ms3\"\>([^<]+)\</b\>#i",$raw,$matches);
-		$number = str_replace
-		(
-			array(" ","(",")","-"),
-		"",$matches[1]);
-		return "1".$number;
-	}
-        protected function curl($url, $referer = null, $post = null, $return_header = false)
-        {
-                static $tmpfile;
-
-                if (! isset ($tmpfile) || ($tmpfile == ''))
-                        { $tmpfile = tempnam("\temp", "FOO"); }
-
-                $ch = curl_init($url);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($ch, CURLOPT_COOKIEFILE, $tmpfile);
-                curl_setopt($ch, CURLOPT_COOKIEJAR, $tmpfile);
-                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                        "Accept" => "application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
-                ));
-                if($this->useragent)
-                        { curl_setopt($ch, CURLOPT_USERAGENT, $this->useragent); }
-
-                if ($referer)
-                        { curl_setopt($ch, CURLOPT_REFERER, $referer); }
-
-                if (!is_null($post))
-                {
-                        curl_setopt($ch, CURLOPT_POST, true);
-                        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-                }
-
-                if ($return_header)
-                {
-                        curl_setopt($ch, CURLOPT_HEADER, 1);
-                        $html = curl_exec($ch);
-                        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-                        $this->lastURL = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-                        return substr($html, 0, $header_size);
-                }
-                else
-                {
-                        $html = curl_exec($ch);
-                        $this->lastURL = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-                        return $html;
-                }
-        }
-        protected function match($regex, $str, $i = 0)
-        {
-                return preg_match($regex, $str, $match) == 1?$match[$i]:false;
-        }
+    private function match($regex, $str, $out_ary = 0)
+    {
+        return preg_match($regex, $str, $match) == 1 ? $match[$out_ary] : false;
+    }
 }
