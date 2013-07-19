@@ -14,7 +14,7 @@ class GoogleVoice
     private $login_auth;
     private $inboxURL = 'https://www.google.com/voice/m/';
     private $loginURL = 'https://www.google.com/accounts/ClientLogin';
-    private $smsURL = 'https://www.google.com/voice/m/sendsms';
+    private $smsURL = 'https://www.google.com/voice/m/sms';
 	
 
     public function __construct($username, $password)
