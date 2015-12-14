@@ -1,4 +1,4 @@
-<?php require_once("settings.php"); ?>
+<?php require_once 'settings.php'; ?>
 <form onsubmit="outlookConnect();return false;">
     <p>
         <label for="user"><acronym title="Google Voice">GV</acronym> Login:</label> <input type="text" id="user"
